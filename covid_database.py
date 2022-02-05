@@ -6,6 +6,7 @@ from time import sleep
 import pandas as pd
 from pathlib import Path
 from sqlalchemy import create_engine
+from sqlalchemy_utils import database_exists, create_database
 from threading import Thread
 from shutil import get_terminal_size
 import configparser
@@ -214,7 +215,6 @@ class Covid_Database(object):
         else:
             # Start MySQL Database #
             self._printout('Database not Running, Restarting...')
-            # subprocess.run('"D:/xampp/xampp-control.exe"')
             subprocess.Popen(["D:/xampp/xampp-control.exe"], shell=True)
             sleep(2)
 
@@ -234,6 +234,9 @@ class Covid_Database(object):
         my_conn = create_engine(
             f"mysql+mysqlconnector://{root}:@{host}/{db}",
             connect_args={'connect_timeout': 600})
+
+        if not database_exists(my_conn.url):
+            create_database(my_conn.url)
         return my_conn
 
     # Get Population per FIPS Code #
@@ -474,7 +477,7 @@ class Covid_Database(object):
             _state = str(state).replace(' ', '_').lower()
 
             # Add to MySQL database #
-            self._printout(f'Saving {_state} Data to MySQL')
+            self._printout(f'Saving {state} Data to MySQL')
             output_data.to_sql(
                 name=_state,
                 con=self._mysql('covid'),
@@ -529,7 +532,7 @@ class Covid_Database(object):
 
 def run():
     with Covid_Database(local_directory):
-        sleep(14400)
+        sleep(43200)
         run()
 
 
