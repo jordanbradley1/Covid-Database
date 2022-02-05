@@ -4,9 +4,10 @@ This code is used to compile covid data from each county and save it to a local 
 
 How the Code Works:
 The Local Directory where csv files are saved is at the beginning and can be edited. 
-"""
+```
 local_directory = 
-"""
+```
+
 
 
 
