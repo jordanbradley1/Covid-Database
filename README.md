@@ -34,11 +34,11 @@ This function compiles the relative google search trend for each state for the t
 
 
 To-Do
-Explain 
-> _get_historical_data
-> _get_live_data
-> _clean_data
-> _run
+- Explain 
+- _get_historical_data
+- _get_live_data
+- _clean_data
+- run
 
 
 
