@@ -3,8 +3,10 @@
 
 This code is used to compile covid data from each county, in every state, then saved to C:\COVID19\ as .csv files, and uploaded to MySQL server if you want. Data includes positive cases, confirmed deaths, google search trend data per state, vaccination rates, and various statistics like population density, death rate, etc. 
 
-Tableau Dashboard using this Data: https://public.tableau.com/app/profile/jordan.bradley/viz/CovidTracking_16443875223840/Dashboard
-## How the Code Works:
+## Tableau Dashboard using this Data: 
+### https://public.tableau.com/app/profile/jordan.bradley/viz/CovidTracking_16443875223840/Dashboard
+------------------
+# How the Code Works:
 
 ```
 local_directory = Path(f'C:/COVID19/')
