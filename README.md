@@ -1,43 +1,19 @@
-# Covid Database Builder
+# Covid Database Builder for Visualization in Tableau
 
-### Requirements
-- MySQL server setup through XAMPP
 
-This code is used to compile covid data from each county in every state and save it to a local drive as .csv files, as well as to a MySQL server. Data includes positive cases, confirmed deaths, google trend data per state, and various statistics like population density, death rate, etc. 
+This code is used to compile covid data from each county, in every state, then saved to C:\COVID19\ as .csv files, and uploaded to MySQL server if you want. Data includes positive cases, confirmed deaths, google search trend data per state, vaccination rates, and various statistics like population density, death rate, etc. 
 
 ## How the Code Works:
 
 ```
-local_directory = 
+local_directory = Path(f'C:/COVID19/')
 ```
 - The Local Directory where csv files are saved is at the beginning and can be edited, the default is C:/
 ------------------
 ```
-self.keywords = ['covid']
+class config_handler:
 ```
-- You can customize which keywords are included in the google trend search. Right now it only includes "covid". 
-------------------
-```
-def _create_database(directory):
-    _database_directory = Path(directory) / f'COVID19/'
-    if not os.path.isdir(_database_directory):
-        _database_directory = f'C:/COVID19/'
-        os.makedirs(_database_directory)
-        return Path(_database_directory)
-    return Path(_database_directory)
-```
-- This function is used to create the locally stored database, where all data will be saved. 
-------------------
-```
-def _find_config_file(self):
-    config_file = self.database_directory / 'covid19_config.ini'
-    if not os.path.isfile(config_file):
-        with open(config_file, 'a') as cfg:
-            self.write_config.write(cfg)
-        config_file = self.database_directory / 'covid19_config.ini'
-    return config_file
-```
-- This function looks for an .ini present in the directory, if one is not found, one will be created using the __write_ini_params()_ function. 
+- This class creates and reads a configuration file that contains the MySQL server information, database location, etc.
 ------------------
 ```
 def _database_running_check(self):
@@ -65,23 +41,29 @@ def _database_running_check(self):
 - This function checks if the MySQL server is up and running, if not, XAMPP.exe is executed which should start the database. 
 ------------------
 ```
-def _mysql(self, db):
-    self.read_config.read(self.config)
-    self.db = db
+ def _mysql(self, db):
+        # Configuration Variables #
+        self.config = local_directory / 'covid19_config.ini'
+        self.write_config = configparser.ConfigParser(strict=False)
+        self.read_config = configparser.ConfigParser(strict=False)
 
-    root = self.read_config.get("mysql", "user")
-    host = self.read_config.get("mysql", "host")
-    db = self.db
+        self.read_config.read(self.config)
+        self.db = db
 
-    # MySQL Connection #
-    my_conn = create_engine(
-        f"mysql+mysqlconnector://{root}:@{host}/{db}",
-        connect_args={'connect_timeout': 600})
-    if not database_exists(my_conn.url):
-        create_database(my_conn.url)
-    return my_conn
+        root = self.read_config.get("mysql", "user")
+        host = self.read_config.get("mysql", "host")
+        db = self.db
+
+        # MySQL Connection #
+        my_conn = create_engine(
+            f"mysql+mysqlconnector://{root}:@{host}/{db}",
+            connect_args={'connect_timeout': 600})
+
+        if not database_exists(my_conn.url):
+            create_database(my_conn.url)
+        return my_conn
 ```
-- MySQL Handler
+- MySQL connection handler
 ------------------
 ```
   def _population_data(self):
@@ -94,21 +76,23 @@ def _google_trends(self):
 - This function compiles the relative google search trend values for the keyword "covid", for each state, then saves that all to the database. 
 ------------------
 ```
+def _vaccine_data(self):
+```
+- This function gathers the number of administered vaccines for each state. 
+```
 def _get_historical_data():
 def _get_live_data():
 def _merge_data(self):
 def _clean_data(self):
 ```
-- These four functions are self-explanatory. Historical data is pulled along with the most recent data from the last 24 hours. This is merged into one table then sorted and cleaned. Duplicates are removed and unknown values are removed. Then the data is used to calculate cases/deaths per 1k people, along with 7-day moving averages. 
+- These four functions are self-explanatory. Historical data is pulled along with the most recent data from the last 24 hours. This is merged into one table then sorted and cleaned. Duplicates are removed and unknown values are removed. Then the data is used to calculate cases/deaths per 1k people, along with 14-day moving averages. 
 ------------------
 ```
-def run():
-    with Covid_Database(local_directory):
-        sleep(43200)
-        run()
+Covid_Database().run()
 ```
-- All of this is executed via the _run()_ function, which provides text output for each step of the process. The sleep timer is set so the data is updated every 12 hours, or 43200 seconds. 
+- All of this is executed via the _run()_ function, which provides text output for each step of the process.
 ------------------
 
-
+### To-Do:
+- Compile to .exe
 
